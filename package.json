@@ -1,0 +1,19 @@
+{
+  "name": "social-robot-signaling-server",
+  "version": "1.0.0",
+  "description": "Signaling server for social robot project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dealerpriest/social-robot-signaling-server.git"
+  },
+  "author": "Jonas och Samuel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dealerpriest/social-robot-signaling-server/issues"
+  },
+  "homepage": "https://github.com/Dealerpriest/social-robot-signaling-server#readme"
+}
