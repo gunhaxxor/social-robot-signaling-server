@@ -3,10 +3,9 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var _ = require("lodash");
 
+let PORT = 3000;
 if (process.argv[2]) {
-  const PORT = process.argv[2];
-} else {
-  const PORT = 3000;
+  PORT = process.argv[2];
 }
 
 var users = [];
