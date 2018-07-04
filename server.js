@@ -15,6 +15,9 @@ app.get("/", function(req, res) {
 });
 
 io.on("connection", function(socket) {
+  socket.on("test", () => {
+    console.log("Mottaget!");
+  });
   socket.on("login", function(name) {
     // if this socket is already connected,
     // send a failed login message
