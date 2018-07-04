@@ -4,7 +4,7 @@ var io = require("socket.io")(http);
 var _ = require("lodash-node");
 
 var users = [];
-
+console.log("Startar server.js");
 app.get("/", function(req, res) {
   res.sendfile("index.html");
 });
