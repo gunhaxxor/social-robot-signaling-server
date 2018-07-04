@@ -2,7 +2,7 @@
   "name": "social-robot-signaling-server",
   "version": "1.0.0",
   "description": "Signaling server for social robot project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
