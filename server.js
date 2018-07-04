@@ -1,7 +1,7 @@
-var app = require("express")();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
-var _ = require("lodash");
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var _ = require('lodash');
 
 let PORT = 3000;
 if (process.env.PORT) {
@@ -9,16 +9,15 @@ if (process.env.PORT) {
 }
 
 var users = [];
-console.log("Startar server.js");
-app.get("/", function(req, res) {
-  res.sendfile("index.html");
+
+console.log('Startar server.js');
+
+app.get('/', function(req, res) {
+  res.sendfile('index.html');
 });
 
-io.on("connection", function(socket) {
-  socket.on("test", () => {
-    console.log("Mottaget!");
-  });
-  socket.on("login", function(name) {
+io.on('connection', function(socket) {
+  socket.on('login', function(data) {
     // if this socket is already connected,
     // send a failed login message
     if (
@@ -26,61 +25,31 @@ io.on("connection", function(socket) {
         socket: socket.id
       }) !== -1
     ) {
-      socket.emit("login_error", "You are already connected.");
-    }
-    // if this name is already registered,
-    // send a failed login message
-    if (
-      _.findIndex(users, {
-        name: name
-      }) !== -1
-    ) {
-      socket.emit("login_error", "This name already exists.");
-      return;
+      socket.emit('login_error', 'You are already connected.');
     }
 
-    users.push({
-      name: name,
-      socket: socket.id
-    });
-
-    socket.emit("login_successful", _.pluck(users, "name"));
-    socket.broadcast.emit("online", name);
-
-    console.log(name + " logged in");
+    users.push({ id: data.id, socket: socket.id });
+    console.log('socket with id ' + socket.id + ' logged in');
   });
 
-  socket.on("sendMessage", function(name, message) {
-    var currentUser = _.find(users, {
-      socket: socket.id
-    });
-    if (!currentUser) {
-      return;
-    }
+  socket.on('sendMessage', function(message) {
+    var peer_id = Number(message.peer_id);
+    var contact = _.find(users, { id: peer_id });
 
-    var contact = _.find(users, {
-      name: name
-    });
-    if (!contact) {
-      return;
-    }
-
-    io.to(contact.socket).emit("messageReceived", currentUser.name, message);
+    io.to(contact.socket).emit('messageReceived', message);
   });
 
-  socket.on("disconnect", function() {
-    var index = _.findIndex(users, {
-      socket: socket.id
+  socket.on('disconnect', function() {
+    _.remove(users, function(user) {
+      return user.socket == socket.id;
     });
-    if (index !== -1) {
-      socket.broadcast.emit("offline", users[index].name);
-      console.log(users[index].name + " disconnected");
-
-      users.splice(index, 1);
-    }
   });
 });
 
 http.listen(PORT, function() {
-  console.log("listening on *:" + PORT);
+  var host = http.address().address;
+  var port = http.address().port;
+
+  console.log('Example app listening at http://%s:%s', host, port);
+  // console.log('listening on *:' + PORT);
 });
