@@ -1,7 +1,7 @@
 var app = require("express")();
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
-var _ = require("lodash-node");
+var _ = require("lodash");
 
 var users = [];
 console.log("Startar server.js");

@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/Dealerpriest/social-robot-signaling-server/issues"
   },
-  "homepage": "https://github.com/Dealerpriest/social-robot-signaling-server#readme"
+  "homepage": "https://github.com/Dealerpriest/social-robot-signaling-server#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "http": "0.0.0",
+    "lodash": "^4.17.10",
+    "socket.io": "^2.1.1"
+  }
 }
