@@ -3,6 +3,12 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var _ = require("lodash");
 
+if (process.argv[2]) {
+  const PORT = process.argv[2];
+} else {
+  const PORT = 3000;
+}
+
 var users = [];
 console.log("Startar server.js");
 app.get("/", function(req, res) {
@@ -73,6 +79,6 @@ io.on("connection", function(socket) {
   });
 });
 
-http.listen(3000, function() {
+http.listen(PORT, function() {
   console.log("listening on *:3000");
 });
