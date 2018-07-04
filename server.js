@@ -4,8 +4,8 @@ var io = require("socket.io")(http);
 var _ = require("lodash");
 
 let PORT = 3000;
-if (process.argv[2]) {
-  PORT = process.argv[2];
+if (process.env.PORT) {
+  PORT = process.env.PORT;
 }
 
 var users = [];
