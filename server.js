@@ -42,6 +42,10 @@ io.on("connection", function(socket) {
       console.log("no such peer found in the user list!");
       return;
     }
+    console.log(
+      "sending message from " + message.id + " to " + message.peer_id
+    );
+    console.log("with socketId's: " + socket.id + ", " + contact.socket.id);
     io.to(contact.socket).emit("messageReceived", message);
   });
 
