@@ -43,9 +43,17 @@ io.on("connection", function(socket) {
       return;
     }
     console.log(
-      "sending message from " + message.id + " to " + message.peer_id
+      "sending message of type " +
+        message.type +
+        " from " +
+        message.id +
+        " to " +
+        message.peer_id
     );
-    console.log("with socketId's: " + socket.id + ", " + contact.socket.id);
+    if (message.data) {
+      console.log("data:" + JSON.stringify(message.data));
+    }
+    console.log("with socketId's: " + socket.id + ", " + contact.socket);
     io.to(contact.socket).emit("messageReceived", message);
   });
 
