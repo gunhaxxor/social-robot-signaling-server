@@ -30,6 +30,7 @@ io.on("connection", function(socket) {
     }
     // if this name is already registered,
     // send a failed login message
+    //
     if (
       _.findIndex(users, {
         name: name
