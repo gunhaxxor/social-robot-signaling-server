@@ -16,8 +16,9 @@ app.get("/", function(req, res) {
 });
 
 io.on("connection", function(socket) {
+  console.log("socket connection established. id: " + socket.id);
   socket.on("login", function(data) {
-    // if this socket is already connected,
+    // if this socket is already logged in,
     // send a failed login message
     if (
       _.findIndex(users, {
@@ -55,6 +56,10 @@ io.on("connection", function(socket) {
     }
     console.log("with socketId's: " + socket.id + ", " + contact.socket);
     io.to(contact.socket).emit("messageReceived", message);
+  });
+
+  socket.on("robotControl", msg => {
+    socket.emit("robotControl", msg);
   });
 
   socket.on("disconnect", function() {
