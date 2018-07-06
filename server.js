@@ -59,7 +59,7 @@ io.on("connection", function(socket) {
   });
 
   socket.on("robotControl", msg => {
-    socket.emit("robotControl", msg);
+    socket.broadcast.emit("robotControl", msg);
     console.log(msg);
   });
 
