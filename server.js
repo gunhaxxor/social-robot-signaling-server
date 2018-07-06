@@ -60,6 +60,7 @@ io.on("connection", function(socket) {
 
   socket.on("robotControl", msg => {
     socket.emit("robotControl", msg);
+    console.log(msg);
   });
 
   socket.on("disconnect", function() {
