@@ -32,6 +32,11 @@ io.on("connection", function(socket) {
     console.log("socket with id " + socket.id + " logged in");
   });
 
+  // Handle RTC signaling transparently. Just pass on the messageto the other clients
+  socket.on("signal", data => {
+    socket.broadcast.emit("signal", data);
+  });
+
   socket.on("sendMessage", function(message) {
     if (!message.peer_id) {
       console.log("no peer_id provided!!! Saay whaaaaaaa?!");
