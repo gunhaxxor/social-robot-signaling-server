@@ -34,6 +34,8 @@ io.on("connection", function(socket) {
 
   // Handle RTC signaling transparently. Just pass on the messageto the other clients
   socket.on("signal", data => {
+    console.log("received signaling message from socket " + socket.id);
+    console.log(data);
     socket.broadcast.emit("signal", data);
   });
 
