@@ -17,6 +17,11 @@ app.get("/", function(req, res) {
 
 io.on("connection", function(socket) {
   console.log("socket connection established. id: " + socket.id);
+    // if this socket is already logged in,
+    // send a failed login message
+  if (_.findIndex(users, {socket: socket.id}) !== -1) {
+    socket.emit("login_error", "You are already connected.");
+  }
   // socket.on("login", function(data) {
   //   // if this socket is already logged in,
   //   // send a failed login message
@@ -70,7 +75,8 @@ io.on("connection", function(socket) {
     // console.log(msg);
   });
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", () => {
+    console.log("socket disconnected. id: " + socket.id);
     _.remove(users, function(user) {
       return user.socket == socket.id;
     });
