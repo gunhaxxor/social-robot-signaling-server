@@ -53,6 +53,8 @@ io.on("connection", function(socket) {
     // }
 
     console.log(`socket ${socket.id} is now joined to room ${data}`);
+    console.log(`socket has following rooms:`);
+    console.log(socket.rooms);
 
     // Handle RTC signaling transparently. Just pass on the message to the other clients
     socket.on("signal", data => {
