@@ -44,13 +44,13 @@ io.on("connection", function(socket) {
     let room = data;
 
     //TODO: create some logic to prevent more than two clients in a room
-    if(Object.keys(socket.rooms[room].sockets).length > 2){
-      socket.leave(room);
-      console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
-      socket.emit('error', 'that room seems to be full');
+    // if(Object.keys(socket.rooms[room].sockets).length > 2){
+    //   socket.leave(room);
+    //   console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
+    //   socket.emit('error', 'that room seems to be full');
       
-      return;
-    }
+    //   return;
+    // }
 
     console.log(`socket ${socket.id} is now joined to room ${data}`);
 
