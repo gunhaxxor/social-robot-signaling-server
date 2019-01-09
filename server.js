@@ -60,7 +60,8 @@ io.on("connection", function(socket) {
     socket.on("signal", data => {
       console.log("received signaling message from socket " + socket.id);
       console.log(data);
-      socket.to(room).emit("signal", data);
+      console.log(`propagating signaling message to room: ${room}`);
+      socket.broadcast.to(room).emit("signal", data);
     });
 
     // socket.on("sendMessage", function(message) {
@@ -90,7 +91,8 @@ io.on("connection", function(socket) {
     // });
 
     socket.on("robotControl", msg => {
-      socket.to(room).emit("robotControl", msg);
+      console.log(`propagating robotControl message to room: ${room}`);
+      socket.broadcast.to(room).emit("robotControl", msg);
       // console.log(msg);
     });
   })
