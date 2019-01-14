@@ -1,7 +1,9 @@
-var app = require("express")();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
-var _ = require("lodash");
+const app = require("express")();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
+const util = require("util");
+const _ = require("lodash");
+const ip = require("ip");
 
 let PORT = 3000;
 if (process.env.PORT) {
@@ -11,9 +13,20 @@ if (process.env.PORT) {
 var users = [];
 
 console.log("Startar social robot signaling server!");
+console.log();
+console.log(`If running this server locally set the following env vars to be used by ionic:`);
+console.log(`SIGNALING_SERVER=http://${ip.address()+':'+PORT}/`);
+console.log();
+
 app.get("/", function(req, res) {
   res.sendfile("index.html");
 });
+
+//we call this function immediately.
+(() => {
+  console.log("promisifying io (socket.io instance) functions");
+  // util.promisify(io.on);
+})();
 
 io.on("connection", function(socket) {
   console.log("socket connection established. id: " + socket.id);
@@ -37,64 +50,81 @@ io.on("connection", function(socket) {
   //   console.log("socket with id " + socket.id + " logged in");
   // });
 
+  (() => {
+    console.log("promisifying the socket's functions");
+    socket.join = util.promisify(socket.join);
+    socket.leave = util.promisify(socket.leave);
+  })();
+
   socket.on("join", data => {
     console.log(`socket ${socket.id} wants to join room ${data}`);
     
-    socket.join(data);
-    let room = data;
+    socket.join(data)
+      .then(()=> {
+        console.log(`socket ${socket.id} is now joined to room ${data}`);
+        console.log(`socket has following rooms:`);
+        console.log(socket.rooms);
 
-    //TODO: create some logic to prevent more than two clients in a room
-    // if(Object.keys(socket.rooms[room].sockets).length > 2){
-    //   socket.leave(room);
-    //   console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
-    //   socket.emit('error', 'that room seems to be full');
-      
-    //   return;
-    // }
+        let room = data;
 
-    console.log(`socket ${socket.id} is now joined to room ${data}`);
-    console.log(`socket has following rooms:`);
-    console.log(socket.rooms);
+        //TODO: create some logic to prevent more than two clients in a room
+        // if(Object.keys(socket.rooms[room].sockets).length > 2){
+        //   socket.leave(room);
+        //   console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
+        //   socket.emit('error', 'that room seems to be full');
+          
+        //   return;
+        // }
 
-    // Handle RTC signaling transparently. Just pass on the message to the other clients
-    socket.on("signal", data => {
-      console.log("received signaling message from socket " + socket.id);
-      console.log(data);
-      console.log(`propagating signaling message to room: ${room}`);
-      socket.broadcast.to(room).emit("signal", data);
-    });
+        // Handle RTC signaling transparently. Just pass on the message to the other clients
+        socket.on("signal", data => {
+          console.log("received signaling message from socket " + socket.id);
+          console.log(data);
+          console.log(`propagating signaling message to room: ${room}`);
+          socket.to(room).emit("signal", data);
+          // io.to(room).emit("signal", data);
+        });
 
-    // socket.on("sendMessage", function(message) {
-    //   if (!message.peer_id) {
-    //     console.log("no peer_id provided!!! Saay whaaaaaaa?!");
-    //     return;
-    //   }
-    //   var peer_id = Number(message.peer_id);
-    //   var contact = _.find(users, { id: peer_id });
-    //   if (!contact) {
-    //     console.log("no such peer found in the user list!");
-    //     return;
-    //   }
-    //   console.log(
-    //     "sending message of type " +
-    //       message.type +
-    //       " from " +
-    //       message.id +
-    //       " to " +
-    //       message.peer_id
-    //   );
-    //   if (message.data) {
-    //     console.log("data:" + JSON.stringify(message.data));
-    //   }
-    //   console.log("with socketId's: " + socket.id + ", " + contact.socket);
-    //   io.to(contact.socket).emit("messageReceived", message);
-    // });
+        // socket.on("sendMessage", function(message) {
+        //   if (!message.peer_id) {
+        //     console.log("no peer_id provided!!! Saay whaaaaaaa?!");
+        //     return;
+        //   }
+        //   var peer_id = Number(message.peer_id);
+        //   var contact = _.find(users, { id: peer_id });
+        //   if (!contact) {
+        //     console.log("no such peer found in the user list!");
+        //     return;
+        //   }
+        //   console.log(
+        //     "sending message of type " +
+        //       message.type +
+        //       " from " +
+        //       message.id +
+        //       " to " +
+        //       message.peer_id
+        //   );
+        //   if (message.data) {
+        //     console.log("data:" + JSON.stringify(message.data));
+        //   }
+        //   console.log("with socketId's: " + socket.id + ", " + contact.socket);
+        //   io.to(contact.socket).emit("messageReceived", message);
+        // });
 
-    socket.on("robotControl", msg => {
-      console.log(`propagating robotControl message to room: ${room}`);
-      socket.broadcast.to(room).emit("robotControl", msg);
-      // console.log(msg);
-    });
+        socket.on("robotControl", msg => {
+          console.log(`propagating robotControl message to room: ${room}`);
+          socket.to(room).emit("robotControl", msg);
+          // io.to(room).emit("robotControl", msg);
+          // console.log(msg);
+        });
+    })
+      .catch((err)=> console.log(`err: ${err}`));
+  }) //on join end
+
+  socket.on("leave", data => {
+    socket.leave(data)
+      .then(() => console.log(`left room: ${data}`))
+      .catch(err => console.log(`error leaving room ${err}`));
   })
 
   socket.on("disconnect", () => {
