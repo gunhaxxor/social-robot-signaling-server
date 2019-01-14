@@ -118,7 +118,7 @@ io.on("connection", function(socket) {
           // console.log(msg);
         });
     })
-      .catch((err)=> console.log(`err: ${err}`));
+    .catch((err)=> console.log(`err: ${err}`));
   }) //on join end
 
   socket.on("leave", data => {
