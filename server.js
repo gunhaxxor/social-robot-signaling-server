@@ -62,10 +62,12 @@ io.on("connection", function(socket) {
     socket.join(data)
       .then(()=> {
         console.log(`socket ${socket.id} is now joined to room ${data}`);
-        console.log(`socket has following rooms:`);
+        console.log(`the connected socket has following rooms:`);
         console.log(socket.rooms);
 
         let room = data;
+
+        socket.emit(`message`, `room ${data} joined`);
 
         //TODO: create some logic to prevent more than two clients in a room
         // if(Object.keys(socket.rooms[room].sockets).length > 2){
