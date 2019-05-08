@@ -67,7 +67,6 @@ io.on("connection", function(socket) {
 
         let room = data;
 
-        socket.emit(`message`, `room ${data} joined`);
 
         //TODO: create some logic to prevent more than two clients in a room
         // if(Object.keys(socket.rooms[room].sockets).length > 2){
@@ -119,6 +118,14 @@ io.on("connection", function(socket) {
           // io.to(room).emit("robotControl", msg);
           // console.log(msg);
         });
+
+
+        // Send acknowledge that they joined the room
+        roomMessage = {
+          room: room,
+          joined: true
+        };
+        socket.emit("room", roomMessage);
     })
     .catch((err)=> console.log(`err: ${err}`));
   }) //on join end
