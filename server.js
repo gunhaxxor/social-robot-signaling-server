@@ -15,10 +15,10 @@ var users = [];
 console.log("Startar social robot signaling server!");
 console.log();
 console.log(`If running this server locally set the following env vars to be used by ionic:`);
-console.log(`SIGNALING_SERVER=http://${ip.address()+':'+PORT}/`);
+console.log(`SIGNALING_SERVER=http://${ip.address() + ':' + PORT}/`);
 console.log();
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   res.sendfile("index.html");
 });
 
@@ -28,10 +28,10 @@ app.get("/", function(req, res) {
   // util.promisify(io.on);
 })();
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   console.log("socket connection established. id: " + socket.id);
-    // if this socket is already logged in,
-    // send a failed login message
+  // if this socket is already logged in,
+  // send a failed login message
   // if (_.findIndex(users, {socket: socket.id}) !== -1) {
   //   socket.emit("login_error", "You are already connected.");
   // }
@@ -58,9 +58,9 @@ io.on("connection", function(socket) {
 
   socket.on("join", data => {
     console.log(`socket ${socket.id} wants to join room ${data}`);
-    
+
     socket.join(data)
-      .then(()=> {
+      .then(() => {
         console.log(`socket ${socket.id} is now joined to room ${data}`);
         console.log(`the connected socket has following rooms:`);
         console.log(socket.rooms);
@@ -73,7 +73,7 @@ io.on("connection", function(socket) {
         //   socket.leave(room);
         //   console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
         //   socket.emit('error', 'that room seems to be full');
-          
+
         //   return;
         // }
 
@@ -126,13 +126,17 @@ io.on("connection", function(socket) {
           joined: true
         };
         socket.emit("room", roomMessage);
-    })
-    .catch((err)=> console.log(`err: ${err}`));
+      })
+      .catch((err) => console.log(`err: ${err}`));
   }) //on join end
 
   socket.on("leave", data => {
     socket.leave(data)
-      .then(() => console.log(`left room: ${data}`))
+      .then(() => {
+        console.log(`left room: ${data}`);
+        socket.removeAllListeners("signal");
+        socket.removeAllListeners("robotControl");
+      })
       .catch(err => console.log(`error leaving room ${err}`));
   })
 
@@ -144,7 +148,7 @@ io.on("connection", function(socket) {
   });
 });
 
-http.listen(PORT, function() {
+http.listen(PORT, function () {
   var host = http.address().address;
   var port = http.address().port;
 
