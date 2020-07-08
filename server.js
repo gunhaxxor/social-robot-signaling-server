@@ -58,24 +58,25 @@ io.on("connection", function (socket) {
 
   socket.on("join", data => {
     console.log(`socket ${socket.id} wants to join room ${data}`);
+    let room = data;
 
-    socket.join(data)
+
+
+    console.log('existing rooms: ', io.sockets.adapter.rooms);
+    //TODO: create some logic to prevent more than two clients in a room
+    if (io.sockets.adapter.rooms[room] && Object.keys(io.sockets.adapter.rooms[room].sockets).length > 1) {
+      console.log(`socket ${socket.id} couldn't join room ${room} since it was full`);
+      socket.emit('errorMessage', 'that room seems to be full');
+
+      return;
+    }
+
+    socket.join(room)
       .then(() => {
         console.log(`socket ${socket.id} is now joined to room ${data}`);
         console.log(`the connected socket has following rooms:`);
         console.log(socket.rooms);
 
-        let room = data;
-
-
-        //TODO: create some logic to prevent more than two clients in a room
-        // if(Object.keys(socket.rooms[room].sockets).length > 2){
-        //   socket.leave(room);
-        //   console.log(`socket ${socket.id} couldn't join room ${room} since it wa full`);
-        //   socket.emit('error', 'that room seems to be full');
-
-        //   return;
-        // }
 
         // Handle RTC signaling transparently. Just pass on the message to the other clients
         socket.on("signal", data => {
